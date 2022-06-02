@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Sign Up Pix</title>
+        <link href="https://fonts.font.im/css?family=Exo" rel="stylesheet">
+        <link rel="stylesheet" href="signup.css" type="text/css" />
+    </head>
+    <body>
+        <p class="name">Sign up Pix</p>
+
+        <form action="" method="post" onsubmit="return signup();">
+        <div class="enter">
+            <span class="hint">Username</span>
+            <input class="input" id="username" type="text" pattern="^[a-zA-Z0-9]{3,19}$" placeholder="Latin symbols(A-z),digits(0-9) 4 to 20 characters long." name="username"/>
+            <br />
+            <span class="hint">Password </span>
+            <input class="input1" id="password" type="password" pattern="^[a-zA-Z0-9]{5,15}$" placeholder="Latin symbols(A-z),digits(0-9) 6 to 16 characters long." name="password"/>
+            <br />
+                <span class="progress-bar_text">Password is blank</span>
+        </div>
+        <div class="login">
+            <input type="button" class="button" onclick="signup()" value="Sign Up"/>
+        </div>
+        </form>
+
+        <div class="register">
+            <b>Already register?</b>
+            <a class="button" type="button" value="Sign In" href="login.html">Sign In</a>
+        </div>
+        
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript">
+            function signup(){
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+                if(username == ''){
+                    alert("Username can't be empty!");
+                    return false;
+                }
+                if(password == ''){
+                    alert("Password can't be empty!");
+                    return false;
+                }
+                $.ajax({
+                    type:"POST",
+                    dataType:"json",
+                    crossDomain: true,
+                    url:'http://localhost:3000/api/register',
+                    contentType: "application/json",
+                    data:JSON.stringify({
+                        'username' : username,
+                        "password" : password,
+                    }),
+                    success: function (result){
+                        console.log(result);
+                        alert("Sign up succeed!");
+                        window.location.href="login.html";
+                    },
+                    error: function (result){
+                        console.log(result);
+                        alert(result.responseJSON.message);
+                    }
+                });
+            }
+
+            $(document).ready(function(){
+                const changeText = function (el, text, color) {
+                el.text(text).css('color', color);
+                };
+    
+                $('.input1').keyup(function(){
+                    let len = this.value.length;
+                    const pbText = $('.progress-bar_text');
+    
+                if (len === 0) {
+                    changeText(pbText, 'Password is blank');
+                }
+                else if(len>0 && len < 6){
+                    changeText(pbText, 'Not long enough');
+                }
+                else if(len>=6 && len < 10){
+                    
+                    changeText(pbText, 'Could be stronger');
+                }
+                else if(len>=10 && len <=16){
+                    changeText(pbText, 'Strong password');
+                }
+                else{
+                    changeText(pbText, 'Too long');
+                }
+                });
+            });
+        </script>
+    </body>
+
+
+</html>

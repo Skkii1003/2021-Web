@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>element-watermark</title>
+<style>
+</style>
+</head>
+
+<body>
+    <p>原图</p>
+    <img id="img1" src="./img/1.png" width="650" height="400">
+    <p>可见水印</p>
+    <canvas id="watermark1" width="650" height="400" style="border:1px solid #d3d3d3;"></canvas>
+    <p>不可见水印</p>
+    <canvas id="watermark2" width="650" height="400" style="border:1px solid #d3d3d3;"></canvas>
+    <p>结果图</p>
+    <canvas id="watermark3" width="650" height="400" style="border:1px solid #d3d3d3;"></canvas>
+    <script>
+        function addWaterMark(){
+            var img = document.getElementById("img1");
+            var c = document.createElement("canvas");
+            c.width = img.width;
+            c.height = img.height;
+            var ctx = c.getContext("2d");
+            ctx.drawImage(img, 0, 0,650,400);
+            ctx.font = '15px Microsoft Yahei';
+            ctx.fillStyle = "white";
+            ctx.fillText("@Skkii",600,400);
+            console.log(c.toDataURL());
+            return c.toDataURL();
+        }
+        var c1 = document.getElementById("watermark1");
+        var ctx1 = c1.getContext("2d");
+        var c2 = document.getElementById("watermark2");
+        var ctx2 = c2.getContext("2d");
+        var img1 = document.getElementById("img1");
+        var img2 = new Image();
+
+        img1.onload = function(){
+            img2.src = addWaterMark();
+            img2.width = c1.width;
+            img2.height = c1.height;
+        }
+        img2.onload = function(){
+            ctx1.drawImage(img2,0,0,650,400);
+        }
+
+        function encode(src){
+            var textData;
+            var c =  document.getElementById("watermark2");
+            var ctx = c.getContext("2d");
+            ctx.font = "30px Microsoft Yahei";
+            ctx.fillText("Skkii",300,200);
+            textData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
+            var img = new Image();
+            var originalData;
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0,c.width, c.height);
+                originalData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                mergeData(ctx, textData,"G",originalData);
+            }
+            img.src = src;
+
+            return c.toDataURL();
+        }
+        
+        function getBitOffset(color) {
+            let bit, offset;
+
+            switch (color) {
+                case 'R':
+                    bit = 0;
+                    offset = 3;
+                    break;
+                case 'G':
+                    bit = 1;
+                    offset = 2;
+                    break;
+                case 'B':
+                    bit = 2;
+                    offset = 1;
+                    break;
+            }
+            return [bit,offset];
+        }
+
+        function mergeData(ctx,textData, color,originalData){
+            let oData = originalData.data;
+            let [bit,offset] = getBitOffset(color);
+
+            for(var i= 0;i< oData.length; i++){
+                if(i % 4 == bit){
+                    if(textData[i+offset]===0 && (oData[i] % 2 === 1)){
+                        if(oData[i]=== 255){
+                            oData[i]--;
+                        }
+                        else{
+                            oData[i]++;
+                        }
+                    }
+                    else if(textData[i+offset]!==0&&(oData[i]%2===0)){
+                        oData[i]++;
+                    }
+                }
+            }
+            ctx.putImageData(originalData, 0, 0);
+        }
+
+        function processData(ctx, originalData,color){
+            let data = originalData.data;
+            let [bit,offset] = getBitOffset(color);
+            for (var i = 0; i < data.length; i++) {
+                if (i % 4 == bit) {
+
+                    if (data[i] % 2 == 0) {
+                        data[i] = 0;
+                    } else {
+                        data[i] = 255;
+                    }
+                } else if (i % 4 == 3) {
+                    continue;
+                } else {
+                    data[i] = 0;
+                }
+            }
+            ctx.putImageData(originalData, 0, 0);
+        }
+
+        function decode(src,color){
+            var c = document.getElementById("watermark3");
+            var ctx = c.getContext("2d");
+            var img = new Image();
+            var originalData;
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0);
+                originalData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                processData(ctx, originalData,color)
+            }
+            img.src = src;
+        }
+
+        var url = encode('./img/1.png');
+        decode(url,"G");
+    </script>
+</body>
+
+</html>

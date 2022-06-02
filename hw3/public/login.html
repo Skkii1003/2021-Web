@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Sign in Pix</title>
+        <link href="https://fonts.font.im/css?family=Exo" rel="stylesheet">
+        <link rel="stylesheet" href="login.css" type="text/css" />
+    </head>
+    <body onload="createCode()">
+        <p class="name">Sign in Pix</p>
+
+        <form action="" method="post" onsubmit="return signup();">
+        <div class="enter">
+            <span>Username</span>
+            <input class="input" id="username" type="text" pattern="^[a-zA-Z0-9]{3,19}$" placeholder="Please enter your username..." name="username"/>
+            <br />
+            <span>Password </span>
+            <input class="input" id="password" type="password" pattern="^[a-zA-Z0-9]{5,15}$" placeholder="Please enter your password..." name="password"/>
+            <br />
+            <input class="code" id="icode" type="text" name="code" placeholder="Please enter Verification Code...">
+            <input type="button" id="vcode" class="vcode" onclick="createCode()">
+        </div>
+        <div class="login">
+            <input class="button" onclick="login()" type="button" value = "Sign In"/>
+        </div>
+        </form>
+
+        <div class="register">
+            <b>Not register yet?</b>
+            <a class="button" type="button" value="Sign Up" href="signup.html">Sign Up</a>
+        </div>
+
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript">
+            var code;
+            function createCode() {
+                code = new Array();
+                var len = 4;
+                var vcode = document.getElementById("vcode");
+                vcode.value = "";
+                var char = new Array(2,3,4,5,6,7,8,9,'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+                for(var i=0;i<len;i++){
+                    var index = Math.floor(Math.random()*32);
+                    code += char[index];
+                }
+                if(code.length != len){
+                    createCode();
+                }
+                vcode.value = code;
+            }
+            function login(){
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+                if(username == ''){
+                    alert("Username can't be empty!");
+                    return false;
+                }
+                if(password == ''){
+                    alert("Password can't be empty!");
+                    return false;
+                }
+                var icode = document.getElementById("icode").value.toUpperCase();
+                if(icode != code){
+                    alert("Verification Code is wrong!");
+                    return false;
+                }
+
+                $.ajax({
+                    type:"POST",
+                    dataType:"json",
+                    crossDomain: true,
+                    url:'http://localhost:3000/api/login',
+                    contentType: "application/json",
+                    data:JSON.stringify({
+                        'username' : username,
+                        "password" : password,
+                    }),
+                    success: function (result){
+                        console.log(result);
+                        alert("Sign in succeed!");
+                        window.location.href="main.html";
+                    },
+                    error: function (result){
+                        console.log(result);
+                        alert(result.responseJSON.message);
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>

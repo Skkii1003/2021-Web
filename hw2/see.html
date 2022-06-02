@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>watermark</title>
+
+</head>
+<style>
+    html{
+        margin:0;
+        padding: 0;
+    }
+    .app{
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+    .canvas{
+        height: 200px;
+        width: 540px;
+        margin-top: 50px;
+    }
+    img{
+        height: 200px;
+        width: 540px;
+        margin-top: 50px;
+    }
+
+</style>
+<body>
+<div class="app">
+    <img src="./img/1.png">
+    <canvas class="canvas" id="canvas-mark"></canvas>
+    <canvas class="canvas" id="encode-mark"></canvas>
+    <canvas class="canvas" id="encode-image"></canvas>
+
+</div>
+<script>
+        //绘制显性水印
+        var canvas_mark=document.getElementById("canvas-mark")
+        var dpr = (scale = window.devicePixelRatio || 1);
+        var rect = canvas_mark.getBoundingClientRect();
+        canvas_mark.width = rect.width * dpr;
+        canvas_mark.height = rect.height * dpr;
+        canvas_mark.style.width = rect.width + "px";
+        canvas_mark.style.height = rect.height + "px";
+        let ctx=canvas_mark.getContext('2d');
+        let img = new Image();
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0, canvas_mark.width, canvas_mark.height);
+            const txt = '@ ChenYin';
+            ctx.fillStyle = '#fff';
+            ctx.globalAlpha = 1;
+            ctx.font = `12px 微软雅黑 light`;
+            ctx.textAlign = 'right';
+            ctx.fillText(txt, canvas_mark.width - 10, canvas_mark.height - 10);
+        }
+        img.src="./img/1.png"
+
+        //绘制数字水印和数字水印结果图
+
+        //获取RGB中某一分量对应的位和偏移量
+        function getBitOffset(color) {
+            let bit, offset;
+
+            switch (color) {
+                case 'R':
+                    bit = 0;
+                    offset = 3;
+                    break;
+                case 'G':
+                    bit = 1;
+                    offset = 2;
+                    break;
+                case 'B':
+                    bit = 2;
+                    offset = 1;
+                    break;
+            }
+            return [bit,offset];
+        }
+
+        //图片编码
+        //合并原始图片数据和数字水印的rgb数据, 采用将把没有信息的像素全改成偶数, 把有信息的像素全改成奇数这种编码的方式
+        function mergeData(ctx, newData, color, originalData) {
+            let oData = originalData.data;
+
+            let [bit,offset]=getBitOffset(color);
+
+            for (var i = 0; i < oData.length; i++) {
+                if (i % 4 == bit) {
+
+                    // 只处理目标通道
+                    //把没有信息的像素全改成偶数
+                    if (newData[i + offset] === 0 && (oData[i] % 2 === 1)) {
+
+                        if (oData[i] === 255) {
+                            oData[i]--;
+                        } else {
+                            oData[i]++;
+                        }
+                        //把有信息的像素全改成奇数
+                    } else if (newData[i + offset] !== 0 && (oData[i] % 2 === 0)) {
+                        // // 有信息的像素，该通道最低位置1，可以想想上面的斑点效果是怎么实现的
+                        oData[i]++;
+                    }
+                }
+            }
+            ctx.putImageData(originalData, 0, 0);
+
+
+        }
+
+        function encodeImg(src) {
+            var textData;
+            var can=document.getElementById('encode-mark');
+            var dpr = (scale = window.devicePixelRatio || 1);
+            var rect = canvas_mark.getBoundingClientRect();
+            can.width = rect.width * dpr;
+            can.height = rect.height * dpr;
+            can.style.width = rect.width + "px";
+            can.style.height = rect.height + "px";
+
+
+            var ctx = can.getContext('2d');
+            ctx.font = '30px Microsoft Yahei';
+            ctx.fillText('ChenYin', 200, 120);
+            textData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
+            var img = new Image();
+            // img.crossOrigin = '';
+            var originalData;
+            img.onload = function () {
+                // 获取指定区域的canvas像素信息
+                ctx.drawImage(img, 0, 0,can.width,can.height);
+                originalData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                mergeData(ctx, textData, 'G', originalData)
+            };
+            img.src = src;
+        }
+
+        //图片解码
+        function processData(ctx, originalData,color) {
+            let data = originalData.data;
+            let [bit,offset]=getBitOffset(color);
+            for (var i = 0; i < data.length; i++) {
+                if (i % 4 == bit) {
+
+                    if (data[i] % 2 == 0) {
+                        data[i] = 0;
+                    } else {
+                        data[i] = 255;
+                    }
+                } else if (i % 4 == 3) {
+                    continue;//alpha通道不处理
+                } else {
+                    data[i] = 0;
+                }
+            }
+            // 将结果绘制到画布
+            ctx.putImageData(originalData, 0, 0);
+        }
+
+        function decodeImg(src,color) {
+            var encode_image = document.getElementById('encode-image')
+            var dpr = (scale = window.devicePixelRatio || 1);
+            var rect = canvas_mark.getBoundingClientRect();
+            encode_image.width = rect.width * dpr;
+            encode_image.height = rect.height * dpr;
+            encode_image.style.width = rect.width + "px";
+            encode_image.style.height = rect.height + "px";
+            var ctx=encode_image.getContext('2d');
+            var img = new Image();
+            var originalData;
+            img.onload = function () {
+                // 获取指定区域的canvas像素信息
+                ctx.drawImage(img, 0, 0);
+                originalData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                console.log(originalData)
+                processData(ctx, originalData,color)
+            };
+            img.src = src;
+        }
+        encodeImg('./img/1.png');
+        decodeImg('./img/1-encode.png','G');
+
+
+</script>
+</body>
+
+</html>

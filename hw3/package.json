@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "express": "^5.0.0-alpha.8",
+    "jquery": "^3.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mogodb": "^0.0.1-security",
+    "mongoose": "^6.1.1",
+    "nodemon": "^2.0.15"
+  }
+}

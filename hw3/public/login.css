@@ -1,0 +1,82 @@
+body{
+    background-color: lightpink;
+    font-family: 'Exo', sans-serif;
+    margin: 300px auto;
+}
+
+div{
+    margin: 30px auto;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.name{
+    text-align: center;
+    font-family: 'Exo', sans-serif;
+    font-size: 400%;
+    letter-spacing: 5px;
+}
+
+
+.input{
+    border-radius: 10px;
+    width: 30%;
+    height: 60px;
+    text-align: center;
+    
+    font-family: 'Exo', sans-serif;
+    font-size: 130%;
+    border-width: medium;
+    border-color: black;
+    margin-top: 40px;
+}
+
+
+.button{
+    font-family: 'Exo', sans-serif;
+    border-radius: 10px;
+    width: 140px;
+    height: 50px;
+    border-width: medium;
+    border-color: black;
+    font-size: 120%;
+    border-style: solid;
+    padding: 10px 40px;
+    color:black;
+}
+
+b{
+    font-family: 'Exo', sans-serif;
+    font-size: 130%;
+    margin-right: 20px;
+}
+
+span{
+    font-family: 'Exo', sans-serif;
+    font-size: 180%;
+    margin-right: 20px;
+    vertical-align: buttom;
+}
+
+.code{
+    border-radius: 10px;
+    width: 15%;
+    height: 50px;
+    text-align: center;
+    font-family: 'Exo', sans-serif;
+    font-size: 100%;
+    border-width: medium;
+    border-color: black;
+    margin-top: 40px;
+}
+
+.vcode{
+	font-family: 'Exo', sans-serif;
+	font-style:italic;
+	color:green;
+	border:0;
+	padding:2px 3px;
+	letter-spacing:3px;
+	font-weight:bolder;
+    font-size: 100%;
+}

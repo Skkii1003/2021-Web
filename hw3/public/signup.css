@@ -1,0 +1,79 @@
+body{
+    background-color: lightblue;
+    font-family: 'Exo', sans-serif;
+    margin: 300px auto;
+}
+
+div{
+    margin: 30px auto;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.name{
+    text-align: center;
+    font-family: 'Exo', sans-serif;
+    font-size: 400%;
+    letter-spacing: 5px;
+}
+
+
+.input{
+    border-radius: 10px;
+    width: 30%;
+    height: 60px;
+    text-align: center;
+    font-family: 'Exo', sans-serif;
+    font-size: 130%;
+    border-width: medium;
+    border-color: black;
+    margin-top: 40px;
+}
+
+.input1{
+    border-radius: 10px;
+    width: 30%;
+    height: 60px;
+    text-align: center;
+    font-family: 'Exo', sans-serif;
+    font-size: 130%;
+    border-width: medium;
+    border-color: black;
+    margin-top: 40px;
+}
+
+
+.button{
+    font-family: 'Exo', sans-serif;
+    border-radius: 10px;
+    width: 160px;
+    height: 50px;
+    border-width: medium;
+    border-color: black;
+    font-size: 120%;
+    border-style: solid;
+    padding: 10px 40px;
+    color:black;
+}
+
+b{
+    font-family: 'Exo', sans-serif;
+    font-size: 130%;
+    margin-right: 20px;
+}
+
+.hint{
+    font-family: 'Exo', sans-serif;
+    font-size: 180%;
+    margin-right: 20px;
+    vertical-align: buttom;
+}
+
+.progress-bar_text {
+    display: inline-block;
+    color: #aaa;
+    margin-left: 5px;
+    -webkit-transition: .2s;
+    transition: .2s;
+    font-size: 120%;
+}
